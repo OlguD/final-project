@@ -11,15 +11,16 @@ from tqdm import tqdm
 def main():
     # Chrome options configuration
     chrome_options = Options()
-    chrome_options.add_argument('--headless')
+    #chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
-    chrome_options.binary_location = os.environ.get('CHROME_BIN', '/usr/bin/chromium')
+    #chrome_options.binary_location = os.environ.get('CHROME_BIN', '/usr/bin/chromium')
 
     # Initialize WebDriver with explicit service
-    service = Service(executable_path=os.environ.get('CHROMEDRIVER_PATH', '/usr/bin/chromedriver'))
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    #service = Service(executable_path=os.environ.get('CHROMEDRIVER_PATH', '/usr/bin/chromedriver'))
+    #driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
 
     categories = {
         "red": "kirmizi",
@@ -30,6 +31,7 @@ def main():
 
     for keys, m_link in categories.items():
         main_link = "https://www.terorarananlar.pol.tr/tarananlar#" + m_link
+        driver.refresh()
         print(f"Processing category: {keys}")
 
         # Create directory
@@ -37,7 +39,25 @@ def main():
 
         try:
             driver.get(main_link)
-            time.sleep(3)
+            time.sleep(1.5)
+
+
+            # while True:
+            #     try:
+            #         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            #         time.sleep(1)
+
+            #         more_button = driver.find_element("id", "dahaFazlaYukleBtn")
+            #         if more_button.is_displayed():
+            #             more_button.click()
+            #             time.sleep(1)
+
+            #         else:
+            #             break
+
+            #     except:
+            #         break
+
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             image_elements = soup.find_all(class_='deactivated-list-card-img position-relative')
             base_url = 'https://www.terorarananlar.pol.tr/'
