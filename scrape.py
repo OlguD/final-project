@@ -17,9 +17,7 @@ def main():
     chrome_options.add_argument('--disable-gpu')
     #chrome_options.binary_location = os.environ.get('CHROME_BIN', '/usr/bin/chromium')
 
-    # Initialize WebDriver with explicit service
-    #service = Service(executable_path=os.environ.get('CHROMEDRIVER_PATH', '/usr/bin/chromedriver'))
-    #driver = webdriver.Chrome(service=service, options=chrome_options)
+    # Initialize WebDriver
     driver = webdriver.Chrome(options=chrome_options)
 
     categories = {
@@ -35,34 +33,22 @@ def main():
         print(f"Processing category: {keys}")
 
         # Create directory
-        os.makedirs(f"images/{keys}", exist_ok=True)
+        category_dir = f"images/{keys}"
+        os.makedirs(category_dir, exist_ok=True)
 
         try:
             driver.get(main_link)
             time.sleep(1.5)
 
-
-            # while True:
-            #     try:
-            #         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            #         time.sleep(1)
-
-            #         more_button = driver.find_element("id", "dahaFazlaYukleBtn")
-            #         if more_button.is_displayed():
-            #             more_button.click()
-            #             time.sleep(1)
-
-            #         else:
-            #             break
-
-            #     except:
-            #         break
-
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             image_elements = soup.find_all(class_='deactivated-list-card-img position-relative')
             base_url = 'https://www.terorarananlar.pol.tr/'
 
-            for img in tqdm(image_elements, desc=f"Downloading {keys} images"):
+            # Get community data only once outside the loop
+            community = soup.select('.deactivated-list-card-content')
+            last_span_texts = [com.find_all('span')[-1].get_text(strip=True).replace("/", "_") for com in community if com.find_all('span')]
+
+            for img, last_span_text in zip(image_elements, last_span_texts):
                 style = img.get('style')
                 if style:
                     match = re.search(r'background-image:\s*url\((.*?)\);', style)
@@ -72,8 +58,13 @@ def main():
                         try:
                             image_response = requests.get(full_url)
                             filename = full_url.split('/')[-1]
-                            with open(f"images/{keys}/{filename}", 'wb') as image:
-                                image.write(image_response.content)
+
+                            subdir = os.path.join(category_dir, last_span_text)
+                            os.makedirs(subdir, exist_ok=True)
+
+                            with open(f"{subdir}/{filename}", 'wb') as image_file:
+                                image_file.write(image_response.content)
+
                         except Exception as e:
                             print(f"Error downloading image: {str(e)}")
 
