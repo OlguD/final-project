@@ -32,7 +32,6 @@ def main():
         driver.refresh()
         print(f"Processing category: {keys}")
 
-        # Create directory
         category_dir = f"images/{keys}"
         os.makedirs(category_dir, exist_ok=True)
 
@@ -44,7 +43,6 @@ def main():
             image_elements = soup.find_all(class_='deactivated-list-card-img position-relative')
             base_url = 'https://www.terorarananlar.pol.tr/'
 
-            # Get community data only once outside the loop
             community = soup.select('.deactivated-list-card-content')
             last_span_texts = [com.find_all('span')[-1].get_text(strip=True).replace("/", "_") for com in community if com.find_all('span')]
 

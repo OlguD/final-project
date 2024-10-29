@@ -3,3 +3,4 @@ requests
 selenium
 webdriver_manager
 tqdm
+opencv-python
