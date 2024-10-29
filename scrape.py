@@ -7,7 +7,8 @@ import re
 import time
 import requests
 from tqdm import tqdm
-
+def atakan():
+    pass
 def main():
     # Chrome options configuration
     chrome_options = Options()
