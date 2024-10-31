@@ -46,7 +46,7 @@ def main():
             community = soup.select('.deactivated-list-card-content')
             last_span_texts = [com.find_all('span')[-1].get_text(strip=True).replace("/", "_") for com in community if com.find_all('span')]
 
-            for img, last_span_text in zip(image_elements, last_span_texts):
+            for img, last_span_text in tqdm(zip(image_elements, last_span_texts)):
                 style = img.get('style')
                 if style:
                     match = re.search(r'background-image:\s*url\((.*?)\);', style)
